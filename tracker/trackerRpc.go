@@ -98,6 +98,12 @@ func (s *TraRpcService) SyncLeader(req *app.TraReportTraHostsReq, resp *app.TraR
 
 	defer log.ProtectRun() //保护运行
 
+	// trans for leader
+	if sysServer.getState() != stateLeader {
+		resp.AddTransForHost(sysServer.getLeader())
+		return nil
+	}
+
 	//给予客户端或者传输为nil时
 	if req.Host.StateType == etc.StateDefault || (req.StoHosts == nil && req.TraHosts == nil) ||
 		(len(req.TraHosts) == 0 && len(req.StoHosts) == 0) {
@@ -195,6 +201,11 @@ func (s *TraRpcService) GetEsoData(req *app.TraGetEsoDataReq, resp *app.TraGetEs
 // PutEsoData 上传一个秒传
 func (s *TraRpcService) PutEsoData(req *app.TraPutDataReq, resp *app.TraPutDataResp) error {
 	defer log.ProtectRun()
+
+	if sysServer.getState() != stateLeader {
+		resp.AddTransForHost(sysServer.getLeader())
+		return nil
+	}
 
 	//处理无效问题
 	if req.Eso == nil || req.Eso.Hash == "" || req.Eso.Hosts == "" {

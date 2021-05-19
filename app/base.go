@@ -66,7 +66,7 @@ func (r *RequestBase) Do(host *etc.Addr, resp Response) error {
 		return nil
 	}
 
-	//
+	// resend
 	for i := 0; i < r.maxNum; i++ {
 		err := reqFunc()
 		if err != nil {
