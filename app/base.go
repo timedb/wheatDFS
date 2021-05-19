@@ -34,7 +34,7 @@ func (r *RequestBase) BindLocalHost(request Request, name string) {
 	r.methodName = name
 }
 
-// Do 发起连接获取信息, 短连接
+// Do 发起连接获取信息
 func (r *RequestBase) Do(host *etc.Addr, resp Response) error {
 
 	//请求用方法
@@ -92,9 +92,10 @@ type Response interface {
 }
 
 type ResponseBase struct {
-	State     int
-	TransAddr *etc.Addr //转发请求
-	Err       string    //错误
+	State      int
+	TransAddr  *etc.Addr //转发请求
+	Err        string    //错误
+	RemoteAddr *etc.Addr //远程地址
 }
 
 // JudgeTransFor 是否转发
@@ -109,7 +110,7 @@ func (r *ResponseBase) JudgeTransFor() (bool, *etc.Addr) {
 // AddTransForHost 转发
 func (r *ResponseBase) AddTransForHost(addr *etc.Addr) {
 	r.TransAddr = addr
-	r.State = ResponseTransPond
+	r.WriteRespState(ResponseTransPond, nil)
 }
 
 // Successful 检查请求是否成功
@@ -120,24 +121,28 @@ func (r *ResponseBase) Successful() bool {
 // WriteRespState 写入状态，无错误可以为空
 func (r *ResponseBase) WriteRespState(state int, err error) {
 
-	//写入默认的rpc
-	if state == ResponseStateOK {
+	switch state {
+	case ResponseStateOK:
 		r.State = ResponseStateOK
-	} else if r.State == ResponseStateMissingData {
-		r.State = ResponseStateMissingData
-		r.Err = "missing data"
-	} else if state == ResponseTransPond {
-		r.State = ResponseTransPond
-	} else if state == ResponseStateClientErr {
-		r.State = ResponseStateClientErr
-		r.Err = "client has experienced an unexpected error"
-	} else {
+	case ResponseStateErr:
 		r.State = ResponseStateErr
 		r.Err = "The server has experienced an unexpected error"
+	case ResponseStateMissingData:
+		r.State = ResponseStateMissingData
+		r.Err = "missing data"
+	case ResponseTransPond:
+		r.State = ResponseTransPond
+		r.Err = "trans pond"
+	default:
+		r.State = ResponseStateClientErr
+		r.Err = "client has experienced an unexpected error"
 	}
 
 	if err != nil {
 		r.Err = err.Error()
 	}
+
+	//写入远端IP
+	r.RemoteAddr = etc.SysLocalHost
 
 }

@@ -64,6 +64,8 @@ func MakeServer() *Server {
 
 		ser.counter = app.MakeCounter()
 
+		etc.SysLocalHost = ser.localHost
+
 		SysServer = ser
 	})
 
