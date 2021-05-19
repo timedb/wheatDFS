@@ -706,40 +706,42 @@ func (s *Server) syncFileWork() {
 	//最多可以同时同步30个文件
 	maxSyncCount := make(chan int16, 30)
 
+	esoWork := func(eso *app.EsoData) {
+		if eso.Status == app.Synchronous { //同步中
+			log.SysLog.Add(fmt.Sprintf("%s start sync to storage", eso.Token), log.Info)
+
+			//
+			hosts := s.AnyStorageHosts()
+			for _, host := range hosts {
+
+				if host.GetAddress() == eso.Hosts {
+					continue
+				}
+				err := s.syncEsoToStorage(host, eso) //发起同步
+				//不成功
+				if err != nil {
+					//同步失败
+					log.SysLog.Add(err.Error(), log.Error)
+					s.putSyncFileChan(eso) //加入到尾部
+					return
+				}
+
+			}
+
+			//全部同步成功
+			eso.Status = app.Ok //表示完成同步
+			s.updateEsoterica(eso)
+
+		}
+		<-maxSyncCount
+	}
+
 	for {
 		select {
 		case eso := <-s.syncFileChan:
 
 			maxSyncCount <- 1 //写入同步数据
-			go func() {
-				if eso.Status == app.Synchronous { //同步中
-					log.SysLog.Add(fmt.Sprintf("%s start sync to storage", eso.Token), log.Info)
-
-					//
-					hosts := s.AnyStorageHosts()
-					for _, host := range hosts {
-
-						if host.GetAddress() == eso.Hosts {
-							continue
-						}
-						err := s.syncEsoToStorage(host, eso) //发起同步
-						//不成功
-						if err != nil {
-							//同步失败
-							log.SysLog.Add(err.Error(), log.Error)
-							s.putSyncFileChan(eso) //加入到尾部
-							return
-						}
-
-					}
-
-					//全部同步成功
-					eso.Status = app.Ok //表示完成同步
-					s.updateEsoterica(eso)
-
-				}
-				<-maxSyncCount
-			}()
+			go esoWork(eso)
 
 		}
 	}
