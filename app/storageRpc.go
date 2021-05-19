@@ -164,7 +164,7 @@ func MakeTraGetReq(startTime string, endTime string, level string) *GetLogReq {
 
 }
 
-// MakeStoGetReq 创建Tracker获取日志接口
+// MakeStoGetReq 创建Storage获取日志接口
 func MakeStoGetReq(startTime string, endTime string, level string) *GetLogReq {
 	req := new(GetLogReq)
 	req.StartTime = startTime
