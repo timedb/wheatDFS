@@ -46,6 +46,7 @@ func MakeCounter() *Counter {
 		counter.HistoryLoad = make([]LoadDate, 10)
 		//根据path地址解析
 		counter.decode()
+
 	})
 
 	return counter
@@ -117,6 +118,7 @@ func (c *Counter) updateHistoryLoad(time string, data int) {
 	}
 
 	c.HistoryLoad[c.HisCount%len(c.HistoryLoad)] = date //修改数据
+	c.HisCount += 1
 
 }
 
