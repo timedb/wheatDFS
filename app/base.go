@@ -32,6 +32,7 @@ func (r *RequestBase) BindLocalHost(request Request, name string) {
 	r.Host = etc.SysLocalHost
 	r.This = request
 	r.methodName = name
+	r.maxNum = etc.SysConf.Pool.MaxReConnNum
 }
 
 // Do 发起连接获取信息
@@ -69,14 +70,14 @@ func (r *RequestBase) Do(host *etc.Addr, resp Response) error {
 	// resend
 	for i := 0; i < r.maxNum; i++ {
 		err := reqFunc()
-		if err != nil {
-			return err
-		}
-
 		//转发请求
 		if juderOk, addr := resp.JudgeTransFor(); juderOk {
 			host = addr //转发
 			return reqFunc()
+		}
+
+		if err == nil {
+			return nil
 		}
 
 	}

@@ -82,12 +82,14 @@ func MakeServer() *Server {
 func (s *Server) RegisterToTraLeader() {
 	req := app.MakeRegisterTraReq()
 	resp := new(app.TraRegisterTraResp)
-	req.Do(s.traLeader, resp)
+	err := req.Do(s.traLeader, resp)
+	if err != nil {
+		logner.SysLog.Add(err.Error(), logner.Panic)
+	}
 	if resp.State != app.ResponseStateOK {
 		logner.SysLog.Add("not register to tracker leader", logner.Panic)
-		if !etc.SysConf.Debug {
-			log.Fatalln("regiser err")
-		}
+
+		log.Fatalln("regiser err")
 
 	}
 

@@ -39,9 +39,10 @@ type Log struct {
 }
 
 type RpcPool struct {
-	TimeOut     time.Duration `toml:"timeOut"`     //最大连接时间，秒
-	InitConnNum int           `toml:"initConnNum"` //初始连接数
-	MaxConnNum  int           `toml:"maxConnNum"`  //最大了解数
+	TimeOut      time.Duration `toml:"timeOut"`      //最大连接时间，秒
+	InitConnNum  int           `toml:"initConnNum"`  //初始连接数
+	MaxConnNum   int           `toml:"maxConnNum"`   //最大了解数
+	MaxReConnNum int           `toml:"maxReConnNum"` //reConn number
 }
 
 type Client struct {

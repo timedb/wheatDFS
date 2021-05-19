@@ -70,6 +70,8 @@ maxConnNum = 30
 initConnNum = 5
 # time-out second
 timeOut = 10
+# Maximum number of reconnections
+maxReConnNum = 3
 
 [client]
 # the client prot

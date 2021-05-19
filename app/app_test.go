@@ -2,10 +2,10 @@ package app
 
 import (
 	"fmt"
+	"github.com/timedb/wheatDFS/etc"
+	"github.com/timedb/wheatDFS/log"
 	"testing"
 	"time"
-	"wheatDFS/etc"
-	"wheatDFS/log"
 )
 
 func TestEsoData_Encode(t *testing.T) {

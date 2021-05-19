@@ -21,7 +21,8 @@ func TestMakeServer(t *testing.T) {
 }
 
 func TestServer_Start(t *testing.T) {
-	etc.LoadConf("D:\\goproject\\github.com/timedb/wheatDFS\\etc\\github.com/timedb/wheatDFS.ini")
+	etc.LoadConf("D:/gotest/wheatDFS.ini")
+	app.MakeRpcConnectPool()
 	logner.MakeLogging()
 	server := MakeServer()
 	server.Start()

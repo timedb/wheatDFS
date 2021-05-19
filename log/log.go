@@ -68,6 +68,12 @@ func (log *Logging) conn() {
 
 //创建日志数据库
 func (log *Logging) creatTable() {
+
+	//not create
+	if _, err := os.Stat(etc.SysConf.LogConf.LogPath); err == nil {
+		return
+	}
+
 	rows, _ := log.db.Query(
 		`SELECT name FROM sqlite_master where name = 'log_save'`)
 	if !rows.Next() {
