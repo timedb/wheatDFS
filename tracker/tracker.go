@@ -544,7 +544,7 @@ func (s *Server) work() {
 func (s *Server) updateEsoterica(oes *app.EsoData) error {
 
 	//防止重复写入
-	newOes, err := s.viewEsoterica(oes.Hash)
+	newOes, err := s.viewEsoterica(oes.Token)
 	if err == nil {
 		if oes.Status <= newOes.Status {
 			return nil
@@ -562,9 +562,9 @@ func (s *Server) updateEsoterica(oes *app.EsoData) error {
 		}
 
 		//写入
-		b.Put([]byte(oes.Hash), oes.Encode()) //更新数据
+		b.Put([]byte(oes.Token), oes.Encode()) //更新数据
 
-		log.SysLog.Add(fmt.Sprintf("%s eso update state is %d", oes.Hash, oes.Status), log.Info)
+		log.SysLog.Add(fmt.Sprintf("%s eso update state is %d", oes.Token, oes.Status), log.Info)
 
 		//同步到其他tracker上
 		go s.pushAnyTracker(oes) //同步上去
@@ -578,7 +578,7 @@ func (s *Server) updateEsoterica(oes *app.EsoData) error {
 }
 
 //读取一个秒传Hash
-func (s *Server) viewEsoterica(hash string) (*app.EsoData, error) {
+func (s *Server) viewEsoterica(token string) (*app.EsoData, error) {
 
 	//秒传结构体
 	eso := new(app.EsoData)
@@ -591,7 +591,7 @@ func (s *Server) viewEsoterica(hash string) (*app.EsoData, error) {
 			return BucketErr
 		}
 
-		content := b.Get([]byte(hash))
+		content := b.Get([]byte(token))
 		if content == nil {
 			return HashErr
 		}
@@ -641,7 +641,7 @@ func (s *Server) pushAnyTracker(eso *app.EsoData) {
 
 	// 推送秒传更新
 	for _, addr := range hosts {
-		req := app.MakeTraPutDataReq(eso.Hash, eso.Status, addr, eso.Ext)
+		req := app.MakeTraPutDataReq(eso.Token, eso.Status, addr)
 		req.Eso = eso //修改
 		resp := new(app.TraGetEsoDataResp)
 		err := req.Do(addr, resp)
@@ -713,7 +713,7 @@ func (s *Server) syncFileWork() {
 			maxSyncCount <- 1 //写入同步数据
 			go func() {
 				if eso.Status == app.Synchronous { //同步中
-					log.SysLog.Add(fmt.Sprintf("%s start sync to storage", eso.Hash), log.Info)
+					log.SysLog.Add(fmt.Sprintf("%s start sync to storage", eso.Token), log.Info)
 
 					//
 					hosts := s.AnyStorageHosts()

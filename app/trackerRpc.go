@@ -6,7 +6,6 @@ import (
 	"github.com/timedb/wheatDFS/etc"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
 //主接口方法
@@ -108,25 +107,23 @@ func MakeTraAppointedRoleReq(state int) *TraAppointedRoleReq {
 // EsoData 秒传结构体
 type EsoData struct {
 	Status int    //状态
-	Hash   string //文件的hash
+	Token  string //文件的token
 	Hosts  string //初始保存的地址
-	Ext    string //文件后缀
 }
 
 // Encode 编码
 func (e *EsoData) Encode() []byte {
-	ext := strings.Replace(e.Ext, ".", "", 1)
-	str := fmt.Sprintf("%d++%s++%s++%s", e.Status, e.Hash, e.Hosts, ext)
+	str := fmt.Sprintf("%d++%s++%s", e.Status, e.Token, e.Hosts)
 	return []byte(str)
 }
 
 // Decode 解码
 func (e *EsoData) Decode(b []byte) error {
 	str := string(b)
-	reg := regexp.MustCompile(`^(\d)\+\+(.*?)\+\+(.*?)\+\+(.+)$`)
+	reg := regexp.MustCompile(`^(\d)\+\+(.*?)\+\+(.+)$`)
 	buffer := reg.FindStringSubmatch(str)
 
-	if len(buffer) != 5 {
+	if len(buffer) != 4 {
 		return errors.New("decode err")
 	}
 
@@ -136,9 +133,8 @@ func (e *EsoData) Decode(b []byte) error {
 	}
 
 	e.Status = l
-	e.Hash = buffer[2]
+	e.Token = buffer[2]
 	e.Hosts = buffer[3]
-	e.Ext = buffer[4]
 
 	return nil
 
@@ -174,15 +170,14 @@ type TraPutDataResp struct {
 	ResponseBase
 }
 
-func MakeTraPutDataReq(hash string, status int, hosts *etc.Addr, ext string) *TraPutDataReq {
+func MakeTraPutDataReq(token string, status int, hosts *etc.Addr) *TraPutDataReq {
 	req := new(TraPutDataReq)
 
 	//创建eso
 	eso := new(EsoData)
 	eso.Status = status
-	eso.Hash = hash
+	eso.Token = token
 	eso.Hosts = hosts.GetAddress()
-	eso.Ext = ext
 
 	req.Eso = eso
 

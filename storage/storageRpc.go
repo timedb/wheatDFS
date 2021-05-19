@@ -102,7 +102,7 @@ func (s *StoRpcService) UploadSmallFile(req *app.StoUploadSmallFileReq, resp *ap
 	resp.FileKey = fk.GeyToken()
 	resp.WriteRespState(app.ResponseStateOK, nil)
 
-	SysServer.AddOesFileHash(fk.Hash, app.Synchronous, fk.Ext()) // 保存完毕
+	SysServer.AddOesFileHash(fk.GeyToken(), app.Synchronous) // 保存完毕
 	SysServer.counter.Add(app.UploadNum)
 
 	return nil
@@ -171,7 +171,7 @@ func (s *StoRpcService) UploadMaxFile(req *app.StoUploadMaxFileReq, resp *app.St
 
 		log.SysLog.Add(fk.GeyToken()+"upload start", log.Info)
 
-		SysServer.AddOesFileHash(fk.Hash, app.Transmitting, fk.Ext()) // 保存完毕
+		SysServer.AddOesFileHash(fk.GeyToken(), app.Transmitting) // 保存
 
 		return nil
 
@@ -227,7 +227,7 @@ func (s *StoRpcService) UploadMaxFile(req *app.StoUploadMaxFileReq, resp *app.St
 		resp.WriteRespState(app.ResponseStateOK, nil)
 		resp.Token = fk.GeyToken() //返回文件的token
 
-		SysServer.AddOesFileHash(fk.Hash, app.Synchronous, fk.Ext())
+		SysServer.AddOesFileHash(fk.GeyToken(), app.Synchronous)
 		SysServer.counter.Add(app.UploadNum)
 
 		return nil

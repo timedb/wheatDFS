@@ -208,7 +208,7 @@ func (s *TraRpcService) PutEsoData(req *app.TraPutDataReq, resp *app.TraPutDataR
 	}
 
 	//处理无效问题
-	if req.Eso == nil || req.Eso.Hash == "" || req.Eso.Hosts == "" {
+	if req.Eso == nil || req.Eso.Token == "" || req.Eso.Hosts == "" {
 		resp.WriteRespState(app.ResponseStateMissingData, nil)
 		return nil
 	}

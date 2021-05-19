@@ -160,9 +160,9 @@ func (s *Server) work() {
 }
 
 // AddOesFileHash 添加一个秒传的hash到leader上
-func (s *Server) AddOesFileHash(hash string, status int, ext string) {
+func (s *Server) AddOesFileHash(token string, status int) {
 
-	req := app.MakeTraPutDataReq(hash, status, s.localHost, ext)
+	req := app.MakeTraPutDataReq(token, status, s.localHost)
 	resp := new(app.TraGetEsoDataResp)
 	err := req.Do(s.traLeader, resp)
 	if err != nil {
@@ -197,7 +197,7 @@ func (s *Server) putTraLeader(host *etc.Addr) {
 func (s *Server) syncToLocal(eso *app.EsoData) error {
 
 	//检查数据是否全部存在
-	if eso.Hash == "" || eso.Hosts == "" || eso.Ext == "" {
+	if eso.Token == "" || eso.Hosts == "" {
 		return MissDataErr
 	}
 
@@ -206,7 +206,7 @@ func (s *Server) syncToLocal(eso *app.EsoData) error {
 		return err
 	}
 
-	fk := fileKeyTorch.MakeFileKeyByHash(eso.Hash, eso.Ext)
+	fk := fileKeyTorch.MakeFileKeyByToken(eso.Token)
 	defer fk.Close() //最后关闭全部文件指针
 
 	if fk == nil {
