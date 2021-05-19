@@ -125,7 +125,7 @@ func (log *Logging) panic(msg string, msgLevel int) {
 		level = "Panic"
 	}
 
-	_, path, line, _ := runtime.Caller(2)
+	_, path, line, _ := runtime.Caller(5)
 	logPlace := path + "\tline:" + strconv.Itoa(line)
 	if log.debugType {
 		fmt.Println("level:", level, "msg:", msg, "place:", logPlace)

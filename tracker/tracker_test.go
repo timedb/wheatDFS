@@ -2,30 +2,31 @@ package tracker
 
 import (
 	"fmt"
+	"github.com/timedb/wheatDFS/app"
+	"github.com/timedb/wheatDFS/etc"
+	"github.com/timedb/wheatDFS/log"
+	"github.com/timedb/wheatDFS/torch/hashTorch"
 	"io/ioutil"
 	"os"
 	"testing"
-	"wheatDFS/app"
-	"wheatDFS/etc"
-	"wheatDFS/log"
-	"wheatDFS/torch/hashTorch"
 )
 
 func TestTraServer_StartService(t *testing.T) {
-	etc.LoadConf("D:\\goproject\\wheatDFS\\etc\\wheatDFS.ini")
+	etc.LoadConf("D:/gotest/wheatDFS.ini")
 	log.MakeLogging()
+	app.MakeRpcConnectPool()
 
 	tracker := MakeServer()
 	tracker.StartServer()
 }
 
 func TestServer_GetStorageHost(t *testing.T) {
-	etc.LoadConf("D:\\goproject\\wheatDFS\\etc\\wheatDFS.ini")
+	etc.LoadConf("D:\\goproject\\github/timedb/wheatDFS\\etc\\github/timedb/wheatDFS.ini")
 	log.MakeLogging()
 
 	addr, _ := etc.MakeAddr("127.0.0.1", "8080", etc.StateDefault)
 
-	f, _ := os.Open("D:\\goproject\\wheatDFS\\开发日志.md")
+	f, _ := os.Open("D:\\goproject\\github/timedb/wheatDFS\\开发日志.md")
 	hash, _ := hashTorch.Integrate(f)
 	buf, _ := ioutil.ReadAll(f)
 	req1 := app.MakeStoUploadSmallFileReq(buf, hash, ".md")
