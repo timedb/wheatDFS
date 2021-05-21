@@ -144,6 +144,11 @@ func (r *ResponseBase) WriteRespState(state int, err error) {
 	}
 
 	//写入远端IP
+
+	if counter != nil {
+		counter.Add(LoadNum) //添加一个负载
+	}
+
 	r.RemoteAddr = etc.SysLocalHost
 
 }

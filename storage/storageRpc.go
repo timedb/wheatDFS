@@ -44,8 +44,6 @@ func (s *StoRpcService) start() {
 
 		//使用保护模式运行
 		go func() {
-			SysServer.counter.Add(app.LoadNum) //添加一个负载
-
 			rpc.ServeConn(conn)
 			//防止负载过多
 			defer func() {
