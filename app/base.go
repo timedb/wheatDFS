@@ -3,7 +3,6 @@ package app
 import (
 	"encoding/gob"
 	"github.com/timedb/wheatDFS/etc"
-	"github.com/timedb/wheatDFS/log"
 )
 
 //进行接口注册
@@ -45,7 +44,6 @@ func (r *RequestBase) Do(host *etc.Addr, resp Response) error {
 		conn, err := waitConn.Get()
 
 		if err != nil {
-			log.SysLog.Add(err.Error(), log.Error) //请求连接失败
 			waitConn.Recycle(err)
 			return err
 		}

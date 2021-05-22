@@ -169,7 +169,7 @@ func (r *RpcConnectPool) getConn(wait *WaitConn) {
 
 	//尝试获取连接
 	connects, ok := r.pool[wait.Hosts.GetAddress()] //获取连接队列
-	timer := time.NewTimer(time.Second)
+	timer := time.NewTimer(time.Millisecond * 100)
 
 	//无连接管道的时候, 直接创建连接
 	if !ok {

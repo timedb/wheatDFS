@@ -164,8 +164,9 @@ func (s *StoRpcService) UploadMaxFile(req *app.StoUploadMaxFileReq, resp *app.St
 
 		SysServer.CacheFile(fk) //缓存
 		resp.TransferStatus = app.Link
-		resp.WriteRespState(app.ResponseStateOK, nil)
 		resp.Offset = fk.GetOffset() //根据偏移传输
+
+		resp.WriteRespState(app.ResponseStateOK, nil)
 
 		log.SysLog.Add(fk.GeyToken()+"upload start", log.Info)
 
